@@ -13,9 +13,14 @@ pub mod scf;
 pub use self::{handle::DialectHandle, registry::DialectRegistry};
 use crate::{
     context::{Context, ContextRef},
+    ir::Module,
+    logical_result::LogicalResult,
     string_ref::StringRef,
 };
-use mlir_sys::{mlirDialectEqual, mlirDialectGetContext, mlirDialectGetNamespace, MlirDialect};
+use mlir_sys::{
+    mlirDialectEqual, mlirDialectGetContext, mlirDialectGetNamespace, mlirLoadIRDLDialects,
+    MlirDialect,
+};
 use std::{marker::PhantomData, str::Utf8Error};
 
 #[cfg(feature = "ods-dialects")]
@@ -59,6 +64,10 @@ impl<'c> PartialEq for Dialect<'c> {
 }
 
 impl<'c> Eq for Dialect<'c> {}
+
+pub fn load_irdl_dialects(ctx: &Module) -> LogicalResult {
+    LogicalResult::from_raw(unsafe { mlirLoadIRDLDialects(ctx.to_raw()) })
+}
 
 #[cfg(test)]
 mod tests {
